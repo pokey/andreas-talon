@@ -142,8 +142,3 @@ class Actions:
             cycle(x, 0, 25),
             cycle(y, 0, 25),
         )
-
-
-# _canvas.register('mousemove', on_draw)
-    # paint.style = paint.Style.STROKE
-    # paint.stroke_width = 2

@@ -16,7 +16,7 @@ click right:
 	user.hide()
 	mouse_click(1)
 
-clik (middle | mid):
+click (middle | mid):
 	user.hide()
 	mouse_click(2)
 

@@ -8,32 +8,58 @@ ctx.lists["user.mouse_direction"] = {
     "up", "down", "left", "right"
 }
 
+setting_color = mod.setting(
+    "mouse_grid_color",
+    type=str,
+    default="d3d3d3",
+    desc="Color of the mouse spread grid",
+)
+
+setting_draw_labels = mod.setting(
+    "mouse_grid_draw_labels",
+    type=bool,
+    default=True,
+    desc="If true draw labels on the spread grid",
+)
+
 _canvas = None
 screen = None
 
 def on_draw(canvas):
     paint = canvas.paint
-    paint.color = "d3d3d3"
+    paint.color = setting_color.get()
     w = canvas.width / 26
     h = canvas.height / 26
-    x = 0
-    y = 0
-    c = ord("A")
 
     for i in range(26):
+        x = i * w
+        y = i * h
+
         if i > 0:
             canvas.draw_line(x, 0, x, canvas.height)            
             canvas.draw_line(0, y, canvas.width, y)
 
-        text = chr(c)
+        text = chr(ord("A") + i)
         text_rect = canvas.paint.measure_text(text)[1]
-        canvas.draw_text(text, x + w / 2, text_rect.height)
+        canvas.draw_text(text, x + w / 2- text_rect.width / 2, text_rect.height)
         canvas.draw_text(text, 0, y + h / 2 + text_rect.height / 2)
-           
-        x += w
-        y += h
-        c += 1
 
+    print(setting_draw_labels.get(), type(setting_draw_labels.get()))
+    if setting_draw_labels.get():
+        draw_labels(canvas, w, h)
+
+def draw_labels(canvas, w, h):
+     for i in range(1, 26):
+        x = i * w
+        text_x = chr(ord("A") + i)
+        for j in range(1, 26):
+            y = j * h
+            text = text_x + chr(ord("A") + j)
+            text_rect = canvas.paint.measure_text(text)[1]
+            canvas.draw_text(text,
+                x + w / 2 - text_rect.width / 2,
+                y + h / 2 + text_rect.height / 2
+            )
 
 @mod.action_class
 class Actions:

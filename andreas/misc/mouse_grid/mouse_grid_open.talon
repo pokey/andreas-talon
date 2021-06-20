@@ -8,6 +8,8 @@ small {user.mouse_direction}:      user.mouse_grid_move(mouse_direction, "small"
 [medium] {user.mouse_direction}:   user.mouse_grid_move(mouse_direction, "medium")
 large {user.mouse_direction}:      user.mouse_grid_move(mouse_direction, "large")
 
+(show | hide) labels:              user.mouse_grid_labels()
+
 click [left]:
 	user.hide()
 	mouse_click(0)

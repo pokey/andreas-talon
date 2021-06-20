@@ -19,12 +19,12 @@ setting_color = mod.setting(
     desc="Color of the mouse grid",
 )
 
-setting_draw_labels = mod.setting(
+should_draw_labels = mod.setting(
     "mouse_grid_draw_labels",
     type=bool,
     default=True,
     desc="If true draw labels on the mouse grid",
-)
+).get()
 
 _canvas = None
 screen = None
@@ -39,7 +39,7 @@ def on_draw(canvas):
         y = i * h
 
         if i > 0:
-            canvas.draw_line(x, 0, x, canvas.height)            
+            canvas.draw_line(x, 0, x, canvas.height)
             canvas.draw_line(0, y, canvas.width, y)
 
         text = chr(ord("A") + i)
@@ -47,7 +47,7 @@ def on_draw(canvas):
         canvas.draw_text(text, x + w / 2- text_rect.width / 2, text_rect.height)
         canvas.draw_text(text, 0, y + h / 2 + text_rect.height / 2)
 
-    if setting_draw_labels.get():
+    if should_draw_labels:
         draw_labels(canvas, w, h)
 
 def draw_labels(canvas, w, h):
@@ -142,3 +142,9 @@ class Actions:
             cycle(x, 0, 25),
             cycle(y, 0, 25),
         )
+
+    def mouse_grid_labels():
+        """Toggle labels"""
+        global should_draw_labels
+        should_draw_labels = not should_draw_labels
+        _canvas.freeze()

@@ -99,11 +99,11 @@ def jump(x: int, y: int):
 class Actions:
     def mouse_grid_toggle():
         """Toggle mouse grid"""
-        global _canvas, screen, letter
+        global _canvas, screen, x_index
         if _canvas:
             actions.user.hide()
         else:
-            letter = None
+            x_index = None
             screen = ui.main_screen()
             _canvas = canvas.Canvas.from_screen(screen)
             _canvas.register("draw", on_draw)

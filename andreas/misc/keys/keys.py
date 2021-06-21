@@ -6,7 +6,8 @@ ctx = Context()
 mod.tag("keys")
 
 # alphabet = "alpha bravo charlie delta echo foxtrot golf hotel india juliet kilo lima mike november oscar papa quebec romeo sierra tango uniform victor whiskey xray yankee zulu".split(" ")
-alphabet = "air bat cap drum each fine gust harp sit jury crunch look made near odd pit quench red sun trap urge vest whale plex yank zip".split(" ")
+# alphabet = "air bat cap drum each fine gust harp sit jury crunch look made near odd pit quench red sun trap urge vest whale plex yank zip".split(" ")
+alphabet = "air bat cap drum each fine gust harp ink jury kid look made near odd pit quench red sun trap urge vest whale plex yank zip".split(" ")
 default_digits = "zero one two three four five six seven eight nine ten eleven twelve".split(" ")
 
 mod.list("key_alphabet", desc="The spoken phonetic alphabet")
@@ -120,6 +121,11 @@ def key_unmodified(m) -> str:
 def spell(m) -> str:
     """Spell word phoneticly"""
     return "".join(m.key_alphabet_list)
+
+@mod.capture(rule="({self.key_alphabet} | {self.key_number} | {self.key_symbol})")
+def any_alphanumeric_key(m) -> str:
+    "any alphanumeric key"
+    return str(m)
 
 @mod.capture(rule="{self.key_alphabet}")
 def letter(m) -> str:

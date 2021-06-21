@@ -51,7 +51,7 @@ select lefter [<number_small>]:    user.extend_word_left(number_small or 1)
 select righter [<number_small>]:   user.extend_word_right(number_small or 1)
 
 # ----- Delete, undo, redo -----
-undo it:                           edit.undo()
+(undo it | nope):                  edit.undo()
 redo it:                           edit.redo()
 
 (del | delete):                    edit.delete()
@@ -100,7 +100,7 @@ replace all:                       user.find_replace_all()
 
 # ----- Misc -----
 spamma:                            ", "
-colgap | coal gap:                 ": "
+colgap | coalgap:                  ": "
 
 # ----- Brackets -----
 args:

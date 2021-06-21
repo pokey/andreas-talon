@@ -18,7 +18,12 @@ setting_color = mod.setting(
     default="d3d3d3",
     desc="Color of the mouse grid",
 )
-
+setting_color_selected = mod.setting(
+    "mouse_grid_color_selected",
+    type=str,
+    default="00ff00",
+    desc="Color of the mouse grid selected letter",
+)
 should_draw_labels = mod.setting(
     "mouse_grid_draw_labels",
     type=bool,
@@ -28,10 +33,11 @@ should_draw_labels = mod.setting(
 
 _canvas = None
 screen = None
+x_index = None
 
 def on_draw(canvas):
     paint = canvas.paint
-    paint.color = setting_color.get()
+    def_color = setting_color.get()
     w, h = get_cell_size()
 
     for i in range(26):
@@ -39,28 +45,45 @@ def on_draw(canvas):
         y = i * h
 
         if i > 0:
+            paint.color = def_color
             canvas.draw_line(x, 0, x, canvas.height)
             canvas.draw_line(0, y, canvas.width, y)
 
+        paint.color = setting_color_selected.get() if i == x_index else def_color
         text = chr(ord("A") + i)
         text_rect = canvas.paint.measure_text(text)[1]
         canvas.draw_text(text, x + w / 2- text_rect.width / 2, text_rect.height)
+        paint.color = def_color
         canvas.draw_text(text, 0, y + h / 2 + text_rect.height / 2)
 
     if should_draw_labels:
         draw_labels(canvas, w, h)
 
 def draw_labels(canvas, w, h):
-     for i in range(1, 26):
+    paint = canvas.paint
+    color = setting_color.get()
+    for i in range(1, 26):
+        color_x = setting_color_selected.get() if i == x_index else color
         x = i * w
         text_x = chr(ord("A") + i)
+        rect_x = canvas.paint.measure_text(text_x)[1]
+
         for j in range(1, 26):
             y = j * h
-            text = text_x + chr(ord("A") + j)
-            text_rect = canvas.paint.measure_text(text)[1]
-            canvas.draw_text(text,
-                x + w / 2 - text_rect.width / 2,
-                y + h / 2 + text_rect.height / 2
+            text_y = chr(ord("A") + j)
+            rect_y = canvas.paint.measure_text(text_y)[1]
+            rect = canvas.paint.measure_text(text_x + text_y)[1]
+
+            paint.color = color_x
+            canvas.draw_text(text_x,
+                x + w / 2 - rect.width / 2,
+                y + h / 2 + rect.height / 2
+            )
+           
+            paint.color = color
+            canvas.draw_text(text_y,
+                x + w / 2 + rect.width / 2 - rect_y.width,
+                y + h / 2 + rect.height / 2
             )
 
 def get_cell_size():
@@ -74,32 +97,41 @@ def jump(x: int, y: int):
 
 @mod.action_class
 class Actions:
-    def mouse_grid():
+    def mouse_grid_toggle():
         """Toggle mouse grid"""
-        global _canvas, screen
+        global _canvas, screen, letter
         if _canvas:
             actions.user.hide()
         else:
+            letter = None
             screen = ui.main_screen()
             _canvas = canvas.Canvas.from_screen(screen)
             _canvas.register("draw", on_draw)
             _canvas.freeze()
+            actions.mode.disable("command")
             actions.mode.enable("user.mouse_grid")
 
-    def hide():
+    def mouse_grid_hide():
         """Hide msue grid"""
         global _canvas
         actions.mode.disable("user.mouse_grid")
+        actions.mode.enable("command")
         _canvas.unregister("draw", on_draw)
         _canvas.close()
         _canvas = None
 
-    def mouse_grid_jump(x: str, y: str):
-        """Move cursor to the specified cell"""
-        jump(
-            ord(x) - ord("a"),
-            ord(y) - ord("a")
-        )
+    def mouse_grid_letter(l: str):
+        """Select letter. Move cursor on second letter to the specified cell"""
+        global x_index
+        if x_index:
+            jump(
+                x_index,
+                ord(l) - ord("a")
+            )
+            x_index = None
+        else:
+            x_index = ord(l) - ord("a")
+        _canvas.freeze()
 
     def mouse_grid_move(direction: str, size: str):
         """Move mouse cursor"""

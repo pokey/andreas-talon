@@ -101,7 +101,7 @@ class Actions:
         """Toggle mouse grid"""
         global _canvas, screen, x_index
         if _canvas:
-            actions.user.hide()
+            actions.user.mouse_grid_hide()
         else:
             x_index = None
             screen = ui.main_screen()
@@ -112,7 +112,7 @@ class Actions:
             actions.mode.enable("user.mouse_grid")
 
     def mouse_grid_hide():
-        """Hide msue grid"""
+        """Hide mouse grid"""
         global _canvas
         actions.mode.disable("user.mouse_grid")
         actions.mode.enable("command")
